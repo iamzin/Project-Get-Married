@@ -445,3 +445,58 @@ button {
     transition: none !important;
   }
 }
+
+/* ---------- Age form (intro) ---------- */
+.age-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.age-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.age-input-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.age-input {
+  width: 120px;
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  font: inherit;
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.12s ease;
+  -moz-appearance: textfield;
+}
+.age-input::-webkit-outer-spin-button,
+.age-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.age-input:focus {
+  border-color: var(--accent);
+}
+.age-input::placeholder {
+  color: #d8ccd3;
+}
+.age-unit {
+  font-size: 20px;
+  font-weight: 700;
+}
+.age-error {
+  margin: -4px 0 0;
+  font-size: 13px;
+  color: var(--accent-dark);
+}

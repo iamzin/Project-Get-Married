@@ -1,23 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { questions } from '../data/questions'
 import { results } from '../data/results'
-import { MAX_AGE, MIN_AGE, maxScore, parseAgeParam, resultForAge, scoreToAge, totalScore } from './score'
+import {
+  maxScore,
+  parseCurrentAge,
+  parseShareParams,
+  predictedAge,
+  resultForScore,
+  totalScore,
+  yearsUntilMarriage,
+} from './score'
 
 describe('questions data', () => {
   it('has 15 questions with 3 choices each', () => {
     expect(questions).toHaveLength(15)
     for (const q of questions) expect(q.choices).toHaveLength(3)
-  })
-})
-
-describe('scoreToAge', () => {
-  it('maps min score to 23 and max score to 40', () => {
-    expect(scoreToAge(0)).toBe(MIN_AGE)
-    expect(scoreToAge(maxScore)).toBe(MAX_AGE)
-  })
-  it('clamps out-of-range scores', () => {
-    expect(scoreToAge(-10)).toBe(MIN_AGE)
-    expect(scoreToAge(maxScore + 50)).toBe(MAX_AGE)
   })
 })
 
@@ -28,22 +25,66 @@ describe('totalScore', () => {
   })
 })
 
-describe('resultForAge', () => {
-  it('covers every age from 23 to 40 with exactly one result', () => {
-    for (let age = MIN_AGE; age <= MAX_AGE; age++) {
-      const matches = results.filter((r) => age >= r.minAge && age <= r.maxAge)
-      expect(matches, `age ${age}`).toHaveLength(1)
-      expect(resultForAge(age)).toBe(matches[0])
+describe('yearsUntilMarriage', () => {
+  it('ranges from 1 year (min score) to 12 years (max score)', () => {
+    expect(yearsUntilMarriage(0)).toBe(1)
+    expect(yearsUntilMarriage(maxScore)).toBe(12)
+  })
+  it('never decreases as score increases', () => {
+    let prev = 0
+    for (let s = 0; s <= maxScore; s++) {
+      const y = yearsUntilMarriage(s)
+      expect(y).toBeGreaterThanOrEqual(prev)
+      prev = y
+    }
+  })
+  it('stays inside the 2-year window of the matching result type', () => {
+    for (let s = 0; s <= maxScore; s++) {
+      const idx = results.indexOf(resultForScore(s))
+      const y = yearsUntilMarriage(s)
+      expect(y, `score ${s}`).toBeGreaterThanOrEqual(2 * idx + 1)
+      expect(y, `score ${s}`).toBeLessThanOrEqual(2 * idx + 2)
     }
   })
 })
 
-describe('parseAgeParam', () => {
-  it('accepts valid ages and rejects junk', () => {
-    expect(parseAgeParam('27')).toBe(27)
-    expect(parseAgeParam('22')).toBeNull()
-    expect(parseAgeParam('41')).toBeNull()
-    expect(parseAgeParam('abc')).toBeNull()
-    expect(parseAgeParam(null)).toBeNull()
+describe('predictedAge', () => {
+  it('is always later than the current age', () => {
+    for (const age of [18, 25, 35, 45, 60]) {
+      expect(predictedAge(age, 0)).toBe(age + 1)
+      expect(predictedAge(age, maxScore)).toBe(age + 12)
+    }
+  })
+})
+
+describe('resultForScore', () => {
+  it('maps min score to the first type and max score to the last', () => {
+    expect(resultForScore(0)).toBe(results[0])
+    expect(resultForScore(maxScore)).toBe(results[results.length - 1])
+  })
+})
+
+describe('parseCurrentAge', () => {
+  it('accepts 15~80 and rejects junk', () => {
+    expect(parseCurrentAge('29')).toBe(29)
+    expect(parseCurrentAge(29)).toBe(29)
+    expect(parseCurrentAge('14')).toBeNull()
+    expect(parseCurrentAge('81')).toBeNull()
+    expect(parseCurrentAge('abc')).toBeNull()
+    expect(parseCurrentAge('')).toBeNull()
+    expect(parseCurrentAge(null)).toBeNull()
+  })
+})
+
+describe('parseShareParams', () => {
+  it('parses a valid share link', () => {
+    const shared = parseShareParams(new URLSearchParams('age=36&t=solo'))
+    expect(shared?.age).toBe(36)
+    expect(shared?.result.id).toBe('solo')
+  })
+  it('rejects unknown type or bad age', () => {
+    expect(parseShareParams(new URLSearchParams('age=36&t=nope'))).toBeNull()
+    expect(parseShareParams(new URLSearchParams('age=abc&t=solo'))).toBeNull()
+    expect(parseShareParams(new URLSearchParams('t=solo'))).toBeNull()
   })
 })

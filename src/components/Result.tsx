@@ -3,15 +3,16 @@ import type { ResultType } from '../data/results'
 
 interface Props {
   age: number
+  currentAge: number | null
   result: ResultType
   onRetry: () => void
 }
 
-export function Result({ age, result, onRetry }: Props) {
+export function Result({ age, currentAge, result, onRetry }: Props) {
   const [copied, setCopied] = useState(false)
 
-  const shareUrl = `${window.location.origin}${window.location.pathname}?age=${age}`
-  const homeUrl = `${window.location.origin}${window.location.pathname}`
+  const base = `${window.location.origin}${window.location.pathname}`
+  const shareUrl = `${base}?age=${age}&t=${result.id}`
   const shareText = `나는 ${age}살에 결혼한대요! ${result.emoji} ${result.title}\n너는 몇 살에 결혼할까?`
 
   const copy = async (url: string) => {
@@ -40,7 +41,9 @@ export function Result({ age, result, onRetry }: Props) {
 
   return (
     <section className="screen result" style={{ ['--accent' as string]: result.color }}>
-      <p className="eyebrow">당신의 예상 결혼 나이는</p>
+      <p className="eyebrow">
+        {currentAge !== null ? `지금 ${currentAge}살인 당신의 예상 결혼 나이는` : '예상 결혼 나이는'}
+      </p>
       <div className="result-age">
         <span className="result-age-num">{age}</span>
         <span className="result-age-unit">살</span>
@@ -48,7 +51,7 @@ export function Result({ age, result, onRetry }: Props) {
       <div className="result-badge">
         <span className="result-emoji">{result.emoji}</span>
         <h2 className="result-title">{result.title}</h2>
-        <p className="result-range">{result.ageLabel}</p>
+        <p className="result-range">{result.timing}</p>
       </div>
 
       <p className="result-desc">{result.description}</p>
@@ -83,9 +86,9 @@ export function Result({ age, result, onRetry }: Props) {
           </a>
         </div>
         <button className="btn btn-outline" onClick={onRetry}>
-          다시 테스트하기
+          {currentAge !== null ? '다시 테스트하기' : '나도 테스트하기'}
         </button>
-        <button className="btn btn-text" onClick={() => copy(homeUrl)}>
+        <button className="btn btn-text" onClick={() => copy(base)}>
           친구에게 테스트 보내기
         </button>
       </div>
