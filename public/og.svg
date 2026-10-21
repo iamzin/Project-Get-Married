@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1f4"/><stop offset="1" stop-color="#fde2ff"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <text x="600" y="250" font-size="140" text-anchor="middle">💍</text>
+  <text x="600" y="400" font-size="72" font-weight="800" text-anchor="middle" fill="#1f1a24" font-family="Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif">나는 몇 살에 결혼할까?</text>
+  <text x="600" y="470" font-size="32" text-anchor="middle" fill="#ff6b81" font-family="Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif">15개의 질문으로 알아보는 결혼 타이밍 심리테스트</text>
+</svg>
